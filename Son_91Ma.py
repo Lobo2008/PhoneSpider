@@ -8,7 +8,7 @@ import socket
 socket.setdefaulttimeout(20)
 from Base import Base
 
-isLocalTest = False
+isLocalTest = True
 
 
 class Son_91Ma(Base):
@@ -21,11 +21,10 @@ class Son_91Ma(Base):
         self.token = ''
         self.phones = []#手机号列表，仅用于统计
         self.ItemId = '33'
+        self.count = int(input())
         if isLocalTest:
-            self.count = 3 #手机号的数量
             self.root = '/Users/lobo/Documents/Code/PhoneDecode' #根目录
         else:
-            self.count = int(input())
             self.root = os.getcwd().replace('\\','/')#对Windows下的路径进行处理
         self.path = self.root+'/'+self.eventid
 
@@ -36,9 +35,12 @@ class Son_91Ma(Base):
         self.succeNum = 0#成功的数量，以存储为准
         self.sleeptime = 10
         self.TOKEN_FAILED_REASON = ''
+        self.ENCODING = 'utf-8'
+        self.isContinue = True
+
         self.loginUrl = 'http://api.fxhyd.cn/UserInterface.aspx?action=login&username='+self.name+'&password='+self.password
         self.phoneUrl = 'http://api.fxhyd.cn/UserInterface.aspx?action=getmobile&token='+self.token+'&itemid='+self.ItemId
-        self.releasUrl = 'http://api.fxhyd.cn/UserInterface.aspx?action=release&token='+self.token+'&itemid='+self.ItemId+'&mobile='
+        self.releaseUrl = 'http://api.fxhyd.cn/UserInterface.aspx?action=release&token='+self.token+'&itemid='+self.ItemId+'&mobile='
 
     #token处理器，从接口返回的数据中提取需要的token  success|007214108761d8ac768e9c61085bc3b244f0a1ef
     def tokenResDealer(self, idata):
@@ -54,13 +56,13 @@ class Son_91Ma(Base):
 
     #释放之前拼接释放链接
     def phoneReleaseDealer(self,phone):
-        self.releasUrl = self.releasUrl+phone
+        self.releaseUrl = self.releaseUrl+phone
 
     def spider(self):
         tokenrs = self.getToken()
         if tokenrs:
             print('     token是: ',self.token)
-            self.phoneUrl = self.phoneUrl = 'http://api.fxhyd.cn/UserInterface.aspx?action=getmobile&token='+self.token+'&itemid='+self.ItemId
+            self.phoneUrl = 'http://api.fxhyd.cn/UserInterface.aspx?action=getmobile&token='+self.token+'&itemid='+self.ItemId
             self.getPhone()
             print(' 共获取到:',str(len(self.phones))+' 个手机号')
         else:

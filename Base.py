@@ -93,9 +93,10 @@ class Base:
                         getPhoneOk = True   
                     else:
                         
-                        print('    ',num,' :  获取失败 '+idata,' ',end="")   
+                        print('    ',num,' :  获取失败 '+idata,' ')   
                         if not self.isContinue:
                             break             
+                        time.sleep(self.sleeptime*3)#获取失败，且不停止的话，先休息个3倍睡眠时间
                 except error.HTTPError as e:
                     print (e.code)
                 except error.URLError as e:
