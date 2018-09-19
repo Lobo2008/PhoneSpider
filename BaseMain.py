@@ -12,6 +12,7 @@ from Daddy import Daddy
 from Base import Base
 from Son_91Ma import Son_91Ma
 from Son_XunMa import Son_XunMa
+from Son_YunMa import Son_YunMa
 
 if __name__ == '__main__':
 
@@ -23,9 +24,11 @@ if __name__ == '__main__':
 
     # son = Son('','')
     # son.spider()
-    son_91ma = Son_91Ma('hzw12356','123456qwe')
-    son_91ma.spider()
+    # son_91ma = Son_91Ma('hzw12356','123456qwe')
+    # son_91ma.spider()
 
     # son_xunma = Son_XunMa('test_qq','12345678')
     # son_xunma.spider()
 
+    son_yunma = Son_YunMa('test_qq','12345678')
+    son_yunma.spider()

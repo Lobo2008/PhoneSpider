@@ -33,10 +33,12 @@ class Base:
         self.succeNum = 0#成功的数量，以存储为准
         self.sleeptime = 5
         self.TOKEN_FAILED_REASON = ''
+        self.ENCODING = 'utf-8'
+        self.isContinue = True#某个手机号获取失败的时候，判断要不要继续获取下一个
 
         self.loginUrl = 'this is base-loginUrl'
         self.phoneUrl = 'this is base-phoneUrl'
-        self.releasUrl = 'this is base-releaseUrl'
+        self.releaseUrl = 'this is base-releaseUrl'
 
 
     def getToken(self):
@@ -45,10 +47,10 @@ class Base:
         try:
             fr = urllib.request.urlopen(self.loginUrl)
             data=fr.readline()
-            idata=str(data, encoding = "utf-8")# 
+            idata=str(data, encoding = self.ENCODING)
             token = self.tokenResDealer(idata)
             if token:
-                self.token =  token
+                self.tokenSetter(token)
                 getTokenOk = True
             else:
                 self.TOKEN_FAILED_REASON = idata
@@ -59,11 +61,18 @@ class Base:
         fr.close()
         return True if getTokenOk else False
 
+    #token处理器，从接口返回的数据中提取需要的token ，子类根据需要去实现
     def tokenResDealer(self, idata):
         pass
 
+    #token设置器，获取token以后，还需要将获取电话号码的phoneUrl，释放号码的releaseUrl用token更新
+    def tokenSetter(self, token):
+        self.token =  token
+        self.phoneUrl = self.phoneUrl+token
+        self.releaseUrl = self.releaseUrl+token
+
+    
     def getPhone(self):
-            # http://kapi.yika66.com:20153/User/getPhone?ItemId=项目ID&token=登陆token
             print(' 正在获取手机号 ')
             num = 0
             tmpphones = set()
@@ -72,7 +81,7 @@ class Base:
                 try:
                     fr = urllib.request.urlopen(self.phoneUrl)
                     data = fr.readline()
-                    idata = str(data, encoding = "utf-8")
+                    idata = str(data, encoding = self.ENCODING)
                     fr.close()
                     phone = self.phoneResDealer(idata)
                     if phone:
@@ -83,7 +92,10 @@ class Base:
                         self.save2file(phone) 
                         getPhoneOk = True   
                     else:
-                        print('    ',num,' :  获取失败 '+idata,' ',end="")                
+                        
+                        print('    ',num,' :  获取失败 '+idata,' ',end="")   
+                        if not self.isContinue:
+                            break             
                 except error.HTTPError as e:
                     print (e.code)
                 except error.URLError as e:
@@ -94,6 +106,7 @@ class Base:
             self.phones = list(tmpphones)
             return True if getPhoneOk else   False
 
+    #手机号处理器，从接口返回的数据中提取需要的手机号 子类根据需要去实现
     def phoneResDealer(self, idata):
         pass
 
@@ -115,14 +128,13 @@ class Base:
 
 
     def releasePhone(self, phone):
-        # http://xapi.xunma.net/releasePhone?token=登陆token&phoneList=phone-itemId;phone-itemId
         print(' 正在释放 ',end="")
         self.phoneReleaseDealer(phone)#重新处理一下释放url
         releaseOk = False
         attemps = 0#尝试次数
         while attemps < 3:
             try:
-                fr = urllib.request.urlopen(self.releasUrl)
+                fr = urllib.request.urlopen(self.releaseUrl)
                 releaseOk =  True
             except error.HTTPError as e:
                 print (e.code)
@@ -138,20 +150,8 @@ class Base:
                 attemps += 1
         fr.close()
         return True if releaseOk else False
+    
 
+    #释放之前拼接释放链接 子类根据需要去实现
     def phoneReleaseDealer(self,phone):
         pass        
-        
-    def spider(self):
-        # tokenrs = self.getToken()
-       
-        tokenrs = True
-        if tokenrs:
-            print('     token是: ',self.token)
-
-            self.getPhone()
-            print('获取到:',str(len(self.phones))+' 个手机号')
-        else:
-            print(' 获取token失败（可能原因：账号失效/utf8解码出错）',self.TOKEN_FAILED_REASON)
-       
-
