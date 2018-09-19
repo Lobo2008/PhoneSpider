@@ -21,11 +21,10 @@ class Son_YunMa(Base):
         self.token = ''
         self.phones = []#手机号列表，仅用于统计
         self.ItemId = '2064'
+        self.count = int(input())
         if isLocalTest:
-            self.count = 3 #手机号的数量
             self.root = '/Users/lobo/Documents/Code/PhoneDecode' #根目录
-        else:
-            self.count = int(input())
+        else:            
             self.root = os.getcwd().replace('\\','/')#对Windows下的路径进行处理
         self.path = self.root+'/'+self.eventid
 
@@ -34,9 +33,10 @@ class Son_YunMa(Base):
 
         self.exists = set([phone.replace('.txt','') for phone in os.listdir(self.path)])#目前已经存在的手机号列表
         self.succeNum = 0#成功的数量，以存储为准
-        self.sleeptime = 10
+        self.sleeptime = 8
         self.TOKEN_FAILED_REASON = ''
         self.ENCODING = 'gb2312'
+        self.isContinue = True
 
         self.loginUrl = 'http://xapi.yzm7.com/Login?uName='+self.name+'&pWord='+self.password+'&Developer=VY7%2bHDp7FRgdst3yE6zHuQ%3d%3d'
         self.phoneUrl = 'http://xapi.yzm7.com/getPhone?ItemId='+self.ItemId
@@ -55,7 +55,6 @@ class Son_YunMa(Base):
     #手机号处理器，从接口返回的数据中提取需要的手机号
     def phoneResDealer(self, idata):
         if idata[:5]=='False':#获取号码失败，可能是没有项目，所以这里还要继续处理一下
-            self.isContinue = False
             return False
         elif len(idata) > 11:
             return idata[:11] 
