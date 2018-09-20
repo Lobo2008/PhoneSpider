@@ -81,6 +81,7 @@ class Base:
                 getPhoneOk = False
                 try:
                     fr = urllib.request.urlopen(self.phoneUrl)
+                    print('PHONEURL:',self.phoneUrl)
                     data = fr.readline()
                     fr.close()#每次获取完一个手机号都要关闭链接
                     idata = data.decode(self.ENCODING)
@@ -137,11 +138,13 @@ class Base:
         attemps = 0#尝试次数
         while attemps < 3:
             try:
+                # print('RELEASEURL',self.releaseUrl)
                 fr = urllib.request.urlopen(self.releaseUrl)
                 data = fr.readline()
                 fr.close()
                 idata = data.decode(self.ENCODING)
                 release = self.releaseResDealer(idata)
+                # print('RELEASERS:',idata)
                 if release:
                     releaseOk =  True
                 else:
@@ -158,7 +161,6 @@ class Base:
             else:
                 print(' 释放出错,尝试 ',attemps,end="")#释放出错，则再试
                 time.sleep(self.sleeptime*2)
-                fr.close()
                 attemps += 1
         return True if releaseOk else False
     
