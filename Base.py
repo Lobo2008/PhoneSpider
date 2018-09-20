@@ -110,13 +110,15 @@ class Base:
                             break             
                         time.sleep(self.sleeptime*3)#获取失败，且不停止的话，先休息个3倍睡眠时间
                 except error.HTTPError as e:
-                    print('----phone EX1')
-                    # print (e.code)
+                    # print('----phone EX1')
+                    print (e.code)
                 except error.URLError as e:
-                    print('----phone EX2')
+                    # print('----phone EX2')
                     print (e.reason)
+                except Exception as e:
+                    print('  出错:',e)
                 finally:
-                    print('         phone finally here')
+                    # print('         phone finally here')
                     fr2.close()
                 num += 1
                 
@@ -165,13 +167,14 @@ class Base:
                     if not self.isContinue:
                         break
             except error.HTTPError as e:
-                print('----RELEASE err1')
-                # print (e.code)
+                # print('----RELEASE err1')
+                print (e.code)
             except error.URLError as e:
-                print('----RELEASE err2')
-                # print (e.reason)
+                # print('----RELEASE err2')
+                print (e.reason)
+            except Exception as e:
+                print('  出错:',e)
             finally:
-                print('         release finally here')
                 fr3.close()
 
             if releaseOk:
