@@ -45,6 +45,7 @@ class Base:
         print(' 正在获取token ',end="")
         getTokenOk = False
         try:
+            socket.setdefaulttimeout(20)
             fr = urllib.request.urlopen(self.loginUrl)
             data=fr.readline()
             fr.close()
@@ -80,6 +81,7 @@ class Base:
             while num < self.count:
                 getPhoneOk = False
                 try:
+                    socket.setdefaulttimeout(20)
                     fr = urllib.request.urlopen(self.phoneUrl)
                     print('PHONEURL:',self.phoneUrl)
                     data = fr.readline()
@@ -139,6 +141,7 @@ class Base:
         while attemps < 3:
             try:
                 # print('RELEASEURL',self.releaseUrl)
+                socket.setdefaulttimeout(20)
                 fr = urllib.request.urlopen(self.releaseUrl)
                 data = fr.readline()
                 fr.close()
