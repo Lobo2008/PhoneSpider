@@ -47,6 +47,7 @@ class Base:
         try:
             fr = urllib.request.urlopen(self.loginUrl)
             data=fr.readline()
+            fr.close()
             idata=str(data, encoding = self.ENCODING)
             token = self.tokenResDealer(idata)
             if token:
@@ -58,7 +59,7 @@ class Base:
 	        print (e.code)
         except error.URLError as e:
 	        print (e.reason)
-        fr.close()
+        
         return True if getTokenOk else False
 
     #token处理器，从接口返回的数据中提取需要的token ，子类根据需要去实现
@@ -81,6 +82,11 @@ class Base:
                 try:
                     fr = urllib.request.urlopen(self.phoneUrl)
                     data = fr.readline()
+                    fr.close()#每次获取完一个手机号都要关闭链接
+                    # print(data)
+                    # print(str(data))#b'False:\xd3\xe0\xb6\xee\xb2\xbb\xd7\xe3\xa3\xac\xc7\xeb\xcf\xc8\xca\xcd\xb7\xc5\xba\xc5\xc2\xeb'
+                    # print(str(data.decode('gbk')))#False:余额不足，请先释放号码
+                    print(self.ENCODING)
                     idata = str(data, encoding = self.ENCODING)
                     fr.close()
                     phone = self.phoneResDealer(idata)
@@ -94,6 +100,7 @@ class Base:
                     else:
                         
                         print('    ',num,' :  获取失败 '+idata,' ')   
+                        print('continue?:',self.isContinue)
                         if not self.isContinue:
                             break             
                         time.sleep(self.sleeptime*3)#获取失败，且不停止的话，先休息个3倍睡眠时间
@@ -102,7 +109,7 @@ class Base:
                 except error.URLError as e:
                     print (e.reason)
                 num += 1
-                fr.close()#每次获取完一个手机号都要关闭链接
+                
                 time.sleep(self.sleeptime)
             self.phones = list(tmpphones)
             return True if getPhoneOk else   False
@@ -136,6 +143,7 @@ class Base:
         while attemps < 3:
             try:
                 fr = urllib.request.urlopen(self.releaseUrl)
+                fr.close()
                 releaseOk =  True
             except error.HTTPError as e:
                 print (e.code)
@@ -149,7 +157,6 @@ class Base:
                 time.sleep(self.sleeptime*2)
                 fr.close()
                 attemps += 1
-        fr.close()
         return True if releaseOk else False
     
 
