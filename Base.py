@@ -45,10 +45,10 @@ class Base:
         print(' 正在获取token ',end="")
         getTokenOk = False
         try:
-            socket.setdefaulttimeout(20)
-            fr = urllib.request.urlopen(self.loginUrl)
-            data=fr.readline()
-            fr.close()
+            # time.sleep(self.sleeptime)
+            fr1 = urllib.request.urlopen(self.loginUrl,timeout=2)
+            data=fr1.readline()
+            fr1.close()
             idata=str(data, encoding = self.ENCODING)
             token = self.tokenResDealer(idata)
             if token:
@@ -81,11 +81,11 @@ class Base:
             while num < self.count:
                 getPhoneOk = False
                 try:
-                    socket.setdefaulttimeout(20)
-                    fr = urllib.request.urlopen(self.phoneUrl)
-                    print('PHONEURL:',self.phoneUrl)
-                    data = fr.readline()
-                    fr.close()#每次获取完一个手机号都要关闭链接
+                    time.sleep(self.sleeptime)
+                    fr2 = urllib.request.urlopen(self.phoneUrl,timeout=2)
+                    # print('PHONEURL:',self.phoneUrl)
+                    data = fr2.readline()
+                    fr2.close()#每次获取完一个手机号都要关闭链接
                     idata = data.decode(self.ENCODING)
                     phone = self.phoneResDealer(idata)
                     if phone:
@@ -108,7 +108,6 @@ class Base:
                     print (e.reason)
                 num += 1
                 
-                time.sleep(self.sleeptime)
             self.phones = list(tmpphones)
             return True if getPhoneOk else   False
 
@@ -141,10 +140,10 @@ class Base:
         while attemps < 3:
             try:
                 # print('RELEASEURL',self.releaseUrl)
-                socket.setdefaulttimeout(20)
-                fr = urllib.request.urlopen(self.releaseUrl)
-                data = fr.readline()
-                fr.close()
+                time.sleep(self.sleeptime)
+                fr3 = urllib.request.urlopen(self.releaseUrl,timeout=2)
+                data = fr3.readline()
+                fr3.close()
                 idata = data.decode(self.ENCODING)
                 release = self.releaseResDealer(idata)
                 # print('RELEASERS:',idata)
