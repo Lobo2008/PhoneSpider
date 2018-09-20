@@ -83,12 +83,7 @@ class Base:
                     fr = urllib.request.urlopen(self.phoneUrl)
                     data = fr.readline()
                     fr.close()#每次获取完一个手机号都要关闭链接
-                    # print(data)
-                    # print(str(data))#b'False:\xd3\xe0\xb6\xee\xb2\xbb\xd7\xe3\xa3\xac\xc7\xeb\xcf\xc8\xca\xcd\xb7\xc5\xba\xc5\xc2\xeb'
-                    # print(str(data.decode('gbk')))#False:余额不足，请先释放号码
-                    print(self.ENCODING)
-                    idata = str(data, encoding = self.ENCODING)
-                    fr.close()
+                    idata = data.decode(self.ENCODING)
                     phone = self.phoneResDealer(idata)
                     if phone:
                         # 获取
@@ -143,8 +138,16 @@ class Base:
         while attemps < 3:
             try:
                 fr = urllib.request.urlopen(self.releaseUrl)
+                data = fr.readline()
                 fr.close()
-                releaseOk =  True
+                idata = data.decode(self.ENCODING)
+                release = self.releaseResDealer(idata)
+                if release:
+                    releaseOk =  True
+                else:
+                    print('释放出错：',idata)
+                    if not self.isContinue:
+                        break
             except error.HTTPError as e:
                 print (e.code)
             except error.URLError as e:
@@ -159,6 +162,9 @@ class Base:
                 attemps += 1
         return True if releaseOk else False
     
+    def releaseResDealer(self, idata):
+        pass
+
 
     #释放之前拼接释放链接 子类根据需要去实现
     def phoneReleaseDealer(self,phone):
