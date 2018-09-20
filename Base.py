@@ -7,6 +7,8 @@ import time
 import socket
 socket.setdefaulttimeout(20)
 
+import requests
+
 isLocalTest = True
 
 class Base:
@@ -48,7 +50,9 @@ class Base:
             # time.sleep(self.sleeptime)
             fr1 = urllib.request.urlopen(self.loginUrl,timeout=2)
             data=fr1.readline()
-            fr1.close()
+            # rs = requests.get(self.loginUrl)
+            # data = rs.text
+
             idata=str(data, encoding = self.ENCODING)
             token = self.tokenResDealer(idata)
             if token:
@@ -57,10 +61,14 @@ class Base:
             else:
                 self.TOKEN_FAILED_REASON = idata
         except error.HTTPError as e:
-	        print (e.code)
+            print('---TOKEN err1')
+	        # print (e.code)
         except error.URLError as e:
-	        print (e.reason)
-        
+            print('---TOKEN err2')
+	        # print (e.reason)
+        finally:
+            print('         token finally here')
+            fr1.close()
         return True if getTokenOk else False
 
     #token处理器，从接口返回的数据中提取需要的token ，子类根据需要去实现
@@ -85,7 +93,6 @@ class Base:
                     fr2 = urllib.request.urlopen(self.phoneUrl,timeout=2)
                     # print('PHONEURL:',self.phoneUrl)
                     data = fr2.readline()
-                    fr2.close()#每次获取完一个手机号都要关闭链接
                     idata = data.decode(self.ENCODING)
                     phone = self.phoneResDealer(idata)
                     if phone:
@@ -103,9 +110,14 @@ class Base:
                             break             
                         time.sleep(self.sleeptime*3)#获取失败，且不停止的话，先休息个3倍睡眠时间
                 except error.HTTPError as e:
-                    print (e.code)
+                    print('----phone EX1')
+                    # print (e.code)
                 except error.URLError as e:
+                    print('----phone EX2')
                     print (e.reason)
+                finally:
+                    print('         phone finally here')
+                    fr2.close()
                 num += 1
                 
             self.phones = list(tmpphones)
@@ -143,7 +155,6 @@ class Base:
                 time.sleep(self.sleeptime)
                 fr3 = urllib.request.urlopen(self.releaseUrl,timeout=2)
                 data = fr3.readline()
-                fr3.close()
                 idata = data.decode(self.ENCODING)
                 release = self.releaseResDealer(idata)
                 # print('RELEASERS:',idata)
@@ -154,9 +165,15 @@ class Base:
                     if not self.isContinue:
                         break
             except error.HTTPError as e:
-                print (e.code)
+                print('----RELEASE err1')
+                # print (e.code)
             except error.URLError as e:
-                print (e.reason)
+                print('----RELEASE err2')
+                # print (e.reason)
+            finally:
+                print('         release finally here')
+                fr3.close()
+
             if releaseOk:
                 print(' ok ',end="")
                 break#释放成功，停止循环
