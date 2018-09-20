@@ -10,7 +10,16 @@ from Base import Base
 
 isLocalTest = True
 
+"""
+官网：http://www.xunma.net/
+    登录：  http://xapi.xunma.net/Login?uName=用户名&pWord=密码&Developer=开发者参数
+        返回：  登录token&账户余额&最大登录客户端个数&最多获取号码数&单个客户端最多获取号码数&折扣
+    获取号码： http://xapi.xunma.net/getPhone?ItemId=项目ID&token=登陆token
+        返回：  13112345678; 正确
+                False: Session 过期
+    释放号码：http://xapi.xunma.net/releasePhone?token=登陆token&phoneList=phone-itemId;phone-itemId;
 
+"""
 class Son_XunMa(Base):
     def __init__(self, name, password):
         self.eventid = '43335' #evenid
@@ -58,6 +67,9 @@ class Son_XunMa(Base):
     #手机号处理器，从接口返回的数据中提取需要的手机号 succes|13145678888
     def phoneResDealer(self, idata):
         if idata[:5]=='False':#获取号码失败，可能是没有项目，所以这里还要继续处理一下
+            if '过期' in idata:#Session过期，需要重新登录一下
+                print('Session过期，重新登录...')
+                self.getToken()
             return False
         elif len(idata) > 11:
             return idata[:11] 

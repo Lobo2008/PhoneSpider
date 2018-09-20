@@ -65,6 +65,9 @@ class Son_YunMa(Base):
     #手机号处理器，从接口返回的数据中提取需要的手机号
     def phoneResDealer(self, idata):    #错误： False:Session 过期  正确 17123209468;
         if idata[:5]=='False':#获取号码失败，可能是没有项目，所以这里还要继续处理一下
+            if '过期' in idata:#Session过期，需要重新登录一下
+                print('Session过期，重新登录...')
+                self.getToken()
             return False
         elif len(idata) > 11:
             return idata[:11] 
