@@ -47,12 +47,8 @@ class Base:
         print(' 正在获取token ',end="")
         getTokenOk = False
         try:
-            # time.sleep(self.sleeptime)
             fr1 = urllib.request.urlopen(self.loginUrl,timeout=2)
             data=fr1.readline()
-            # rs = requests.get(self.loginUrl)
-            # data = rs.text
-
             idata=str(data, encoding = self.ENCODING)
             token = self.tokenResDealer(idata)
             if token:
@@ -61,13 +57,10 @@ class Base:
             else:
                 self.TOKEN_FAILED_REASON = idata
         except error.HTTPError as e:
-            print('---TOKEN err1')
-	        # print (e.code)
+	        print (e.code)
         except error.URLError as e:
-            print('---TOKEN err2')
-	        # print (e.reason)
+	        print (e.reason)
         finally:
-            print('         token finally here')
             fr1.close()
         return True if getTokenOk else False
 
@@ -75,18 +68,17 @@ class Base:
     def tokenResDealer(self, idata):
         pass
 
-    #token设置器，获取token以后，还需要将获取电话号码的phoneUrl，释放号码的releaseUrl用token更新
+    #token设置器，获取token以后，需要做的一些事情，主要是用于phoneUrl和releaseUrl的更新，子类具去实现
     def tokenSetter(self, token):
-        self.token =  token
-        self.phoneUrl = self.phoneUrl+token
-        self.releaseUrl = self.releaseUrl+token
-
+        pass
     
     def getPhone(self):
             print(' 正在获取手机号 ')
             num = 0
+            totalNum = 0
+            succeNum = 0
             tmpphones = set()
-            while num < self.count:
+            while totalNum < self.count:
                 getPhoneOk = False
                 try:
                     time.sleep(self.sleeptime)
@@ -97,30 +89,29 @@ class Base:
                     phone = self.phoneResDealer(idata)
                     if phone:
                         # 获取
-                        print('    ',num+1,' :  获取到 '+phone,' ',end="")
+                        print('    ',self.succeNum+1,'/',totalNum+1,' :  获取到 '+phone,' ',end="")
                         tmpphones.add(phone)
                         self.releasePhone(phone)
                         self.save2file(phone) 
                         getPhoneOk = True   
                     else:
                         
-                        print('    ',num,' :  获取失败 '+idata,' ')   
+                        print('    ',totalNum,' :  号码获取出错1:(可能是url拼接错误/返回值处理出错) '+idata,' ;',self.phoneUrl)   
                         print('continue?:',self.isContinue)
                         if not self.isContinue:
                             break             
                         time.sleep(self.sleeptime*3)#获取失败，且不停止的话，先休息个3倍睡眠时间
                 except error.HTTPError as e:
-                    # print('----phone EX1')
-                    print (e.code)
+                    print ('getphone httperror:',e.code)
                 except error.URLError as e:
-                    # print('----phone EX2')
-                    print (e.reason)
+                    print ('getphone urlerror:',e.reason)
                 except Exception as e:
-                    print('  出错:',e)
+                    print('  号码获取出错2(可能是服务器错误):',e)
+                    print('  重新登录ing...')
+                    self.getToken()
                 finally:
-                    # print('         phone finally here')
                     fr2.close()
-                num += 1
+                totalNum += 1
                 
             self.phones = list(tmpphones)
             return True if getPhoneOk else   False
@@ -129,9 +120,9 @@ class Base:
     def phoneResDealer(self, idata):
         pass
 
+    #存储文件
     def save2file(self, phone):
         print(' 正在存储 ',end="")
-
         if phone not in self.exists:
             try:
                 fr = open(self.path+'/'+phone+'.txt','w')  
@@ -145,7 +136,6 @@ class Base:
         else:
             print('     已存在')
 
-
     def releasePhone(self, phone):
         print(' 正在释放 ',end="")
         self.phoneReleaseDealer(phone)#重新处理一下释放url
@@ -153,30 +143,25 @@ class Base:
         attemps = 0#尝试次数
         while attemps < 3:
             try:
-                # print('RELEASEURL',self.releaseUrl)
                 time.sleep(self.sleeptime)
                 fr3 = urllib.request.urlopen(self.releaseUrl,timeout=2)
                 data = fr3.readline()
                 idata = data.decode(self.ENCODING)
                 release = self.releaseResDealer(idata)
-                # print('RELEASERS:',idata)
                 if release:
                     releaseOk =  True
                 else:
-                    print('释放出错：',idata)
+                    print('释放出错1（可能是url拼接错误/返回值处理错）：',idata,'; ',self.releaseUrl)
                     if not self.isContinue:
                         break
             except error.HTTPError as e:
-                # print('----RELEASE err1')
-                print (e.code)
+                print ('release httperror:',e.code)
             except error.URLError as e:
-                # print('----RELEASE err2')
-                print (e.reason)
+                print ('releasee urlerror:',e.reason)
             except Exception as e:
-                print('  出错:',e)
+                print('  释放出错2(可能是服务器出错):',e)
             finally:
                 fr3.close()
-
             if releaseOk:
                 print(' ok ',end="")
                 break#释放成功，停止循环
