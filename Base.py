@@ -7,7 +7,6 @@ import time
 import socket
 socket.setdefaulttimeout(20)
 
-import requests
 
 isLocalTest = True
 
@@ -46,22 +45,31 @@ class Base:
     def getToken(self):
         print(' 正在获取token ',end="")
         getTokenOk = False
-        try:
-            fr1 = urllib.request.urlopen(self.loginUrl,timeout=2)
-            data=fr1.readline()
-            idata=str(data, encoding = self.ENCODING)
-            token = self.tokenResDealer(idata)
-            if token:
-                self.tokenSetter(token)
-                getTokenOk = True
+        attemps = 0 #尝试次数
+        while attemps < 3:
+            try:
+                fr1 = urllib.request.urlopen(self.loginUrl,timeout=2)
+                data=fr1.readline()
+                idata=str(data, encoding = self.ENCODING)
+                token = self.tokenResDealer(idata)
+                if token:
+                    self.tokenSetter(token)
+                    getTokenOk = True
+                else:
+                    self.TOKEN_FAILED_REASON = idata
+            except error.HTTPError as e:
+	            print ('token httperror:',e.code)
+            except error.URLError as e:
+	            print ('token urlerror:',e.reason)
+            except Exception as e:
+                print('token err:',e)
+            finally:  
+                fr1.close()
+            if getTokenOk:
+                break
             else:
-                self.TOKEN_FAILED_REASON = idata
-        except error.HTTPError as e:
-	        print ('token httperror:',e.code)
-        except error.URLError as e:
-	        print ('token urlerror:',e.reason)
-        finally:  
-            fr1.close()
+                print(' token获取失败，重试:',3-attemps)
+            attemps += 1
         return True if getTokenOk else False
 
     #token处理器，从接口返回的数据中提取需要的token ，子类根据需要去实现
