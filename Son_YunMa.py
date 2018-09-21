@@ -48,8 +48,9 @@ class Son_YunMa(Base):
         self.isContinue = True
 
         self.loginUrl = 'http://xapi.yzm7.com/Login?uName='+self.name+'&pWord='+self.password+'&Developer=VY7%2bHDp7FRgdst3yE6zHuQ%3d%3d'
-        self.phoneUrl = 'http://xapi.yzm7.com/getPhone?ItemId='+self.ItemId
-        
+        self.phoneUrl_ori = 'http://xapi.yzm7.com/getPhone?ItemId='+self.ItemId
+        self.phoneUrl = ''
+
         self.releaseUrl_ori = 'http://xapi.yzm7.com/releasePhone?'
         self.releaseUrl = ''
 
@@ -60,7 +61,7 @@ class Son_YunMa(Base):
     #token设置器，获取token以后，还需要将获取电话号码的phoneUrl更新
     def tokenSetter(self, token):
         self.token =  token
-        self.phoneUrl = self.phoneUrl+'&token='+self.token
+        self.phoneUrl = self.phoneUrl_ori+'&token='+self.token
 
     #手机号处理器，从接口返回的数据中提取需要的手机号
     def phoneResDealer(self, idata):    #错误： False:Session 过期  正确 17123209468;

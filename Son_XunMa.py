@@ -48,8 +48,9 @@ class Son_XunMa(Base):
         self.isContinue = True
 
         self.loginUrl = 'http://xapi.xunma.net/Login?uName='+ self.name +'&pWord='+ self.password +'&Developer=8pRH3yF8n2Vz23Hfd%2b%2bHuQ%3d%3d'
-        self.phoneUrl = 'http://xapi.xunma.net/getPhone?ItemId='+self.ItemId
-        
+        self.phoneUrl_ori = 'http://xapi.xunma.net/getPhone?ItemId='+self.ItemId
+        self.phoneUrl = ''
+
         self.releaseUrl_ori = 'http://xapi.xunma.net/releasePhone?'
         self.releaseUrl = ''#每次都要用releaseUrl_ori来拼接新的号码
         
@@ -61,8 +62,7 @@ class Son_XunMa(Base):
     #token设置器，获取token以后，还需要将获取电话号码的phoneUrl，释放号码的releaseUrl用token更新
     def tokenSetter(self, token):
         self.token =  token
-        self.phoneUrl = self.phoneUrl+'&token='+self.token
-        # self.releaseUrl = self.releaseUrl+'&token='+self.token
+        self.phoneUrl = self.phoneUrl_ori+'&token='+self.token
 
     #手机号处理器，从接口返回的数据中提取需要的手机号 succes|13145678888
     def phoneResDealer(self, idata):

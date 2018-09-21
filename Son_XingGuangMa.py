@@ -48,8 +48,11 @@ class Son_XingGuangMa(Base):
         self.isContinue = True
 
         self.loginUrl = 'http://120.78.95.181:9180/service.asmx/UserLoginStr?name='+self.name+'&psw='+self.password
-        self.phoneUrl = 'http://120.78.95.181:9180/service.asmx/GetHM2Str?&xmid='+self.ItemId+'&sl=1&lx=0&ks=0&rj=abc123&a1=&a2=&pk='
         
+        self.phoneUrl_ori = 'http://120.78.95.181:9180/service.asmx/GetHM2Str?&xmid='+self.ItemId+'&sl=1&lx=0&ks=0&rj=abc123&a1=&a2=&pk='
+        self.phoneUrl = ''
+
+
         self.releaseUrl_ori = 'http://120.78.95.181:9180/service.asmx/sfHmStr?'
         self.releaseUrl = ''
 
@@ -62,7 +65,7 @@ class Son_XingGuangMa(Base):
     #token设置器，获取token以后，还需要将获取电话号码的phoneUrl更新
     def tokenSetter(self, token):
         self.token =  token
-        self.phoneUrl = self.phoneUrl+'&token='+self.token
+        self.phoneUrl = self.phoneUrl_ori+'&token='+self.token
 
     #手机号处理器，从接口返回的数据中提取需要的手机号
     def phoneResDealer(self, idata):    #hm=15981605846

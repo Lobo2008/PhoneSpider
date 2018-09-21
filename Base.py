@@ -48,6 +48,7 @@ class Base:
         attemps = 0 #尝试次数
         while attemps < 3:
             try:
+                time.sleep(self.sleeptime*3)
                 fr1 = urllib.request.urlopen(self.loginUrl,timeout=2)
                 data=fr1.readline()
                 idata=str(data, encoding = self.ENCODING)
