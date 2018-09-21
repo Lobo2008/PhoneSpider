@@ -57,10 +57,10 @@ class Base:
             else:
                 self.TOKEN_FAILED_REASON = idata
         except error.HTTPError as e:
-	        print (e.code)
+	        print ('token httperror:',e.code)
         except error.URLError as e:
-	        print (e.reason)
-        finally:
+	        print ('token urlerror:',e.reason)
+        finally:  
             fr1.close()
         return True if getTokenOk else False
 
@@ -74,9 +74,7 @@ class Base:
     
     def getPhone(self):
             print(' 正在获取手机号 ')
-            num = 0
             totalNum = 0
-            succeNum = 0
             tmpphones = set()
             while totalNum < self.count:
                 getPhoneOk = False
@@ -110,11 +108,13 @@ class Base:
                     print('  重新登录ing...')
                     self.getToken()
                 finally:
+                    if not getPhoneOk:
+                        print('  重新登录ing...')
+                        self.getToken()
                     fr2.close()
                 totalNum += 1
-                
             self.phones = list(tmpphones)
-            return True if getPhoneOk else   False
+
 
     #手机号处理器，从接口返回的数据中提取需要的手机号 子类根据需要去实现
     def phoneResDealer(self, idata):
@@ -169,6 +169,7 @@ class Base:
                 print(' 释放出错,尝试 ',attemps,end="")#释放出错，则再试
                 time.sleep(self.sleeptime*2)
                 attemps += 1
+                self.getToken()
         return True if releaseOk else False
     
     def releaseResDealer(self, idata):
