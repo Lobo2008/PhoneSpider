@@ -16,6 +16,8 @@ from Son_XunMa import Son_XunMa
 from Son_YunMa import Son_YunMa
 
 from Son_XingGuangMa import Son_XingGuangMa
+from Son_HuoYunMa import Son_HuoYunMa
+
 
 if __name__ == '__main__':
 
@@ -35,5 +37,8 @@ if __name__ == '__main__':
 
     # print(sys.getdefaultencoding()  ) # utf-8
     
-    xinguangma = Son_XingGuangMa('xiaoxiaolong668','123')
-    xinguangma.spider()
+    # xinguangma = Son_XingGuangMa('xiaoxiaolong668','123')
+    # xinguangma.spider()
+
+    huoyunma = Son_HuoYunMa('xiaoxiaolong668','z12345')
+    huoyunma.spider()

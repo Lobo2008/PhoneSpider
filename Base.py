@@ -59,11 +59,11 @@ class Base:
                 else:
                     self.TOKEN_FAILED_REASON = idata
             except error.HTTPError as e:
-	            print ('token httperror:',e.code)
+	            print ('token httperror:',e.code,end="")
             except error.URLError as e:
-	            print ('token urlerror:',e.reason)
+	            print ('token urlerror:',e.reason,end="")
             except Exception as e:
-                print('token err:',e)
+                print('token err:',e,end="")
             finally:  
                 fr1.close()
             if getTokenOk:
