@@ -57,6 +57,7 @@ class Base:
                     self.tokenSetter(token)
                     getTokenOk = True
                 else:
+                    getTokenOk = False
                     self.TOKEN_FAILED_REASON = idata
             except error.HTTPError as e:
 	            print ('token httperror:',e.code,end="")
@@ -67,9 +68,10 @@ class Base:
             finally:  
                 fr1.close()
             if getTokenOk:
+                print('  token获取成功,stop here')
                 break
             else:
-                print(' token获取失败，重试:',3-attemps)
+                print(' token获取失败，重试:',attemps)
             attemps += 1
         return True if getTokenOk else False
 
@@ -98,11 +100,8 @@ class Base:
                         # 获取
                         print('    ',self.succeNum+1,'/',totalNum+1,' :  获取到 '+phone,' ',end="")
                         tmpphones.add(phone)
-                        self.releasePhone(phone)
-                        self.save2file(phone) 
                         getPhoneOk = True   
                     else:
-                        
                         print('    ',totalNum,' :  号码获取出错1:(可能是url拼接错误/返回值处理出错) '+idata,' ;',self.phoneUrl)   
                         print('continue?:',self.isContinue)
                         if not self.isContinue:
@@ -114,13 +113,14 @@ class Base:
                     print ('getphone urlerror:',e.reason)
                 except Exception as e:
                     print('  号码获取出错2(可能是服务器错误):',e)
-                    print('  重新登录ing...')
-                    self.getToken()
                 finally:
+                    fr2.close()#先关闭，再处理其他的东西，
                     if not getPhoneOk:
                         print('  重新登录ing...')
                         self.getToken()
-                    fr2.close()
+                    else:#获取成功了、fr2释放以后再释放链接及保存文件，否则如果release时间太长的话，fr2会超时
+                        self.releasePhone(phone)
+                        self.save2file(phone) 
                 totalNum += 1
             self.phones = list(tmpphones)
 
@@ -166,7 +166,7 @@ class Base:
             except error.HTTPError as e:
                 print ('release httperror:',e.code)
             except error.URLError as e:
-                print ('releasee urlerror:',e.reason)
+                print ('release urlerror:',e.reason)
             except Exception as e:
                 print('  释放出错2(可能是服务器出错):',e)
             finally:
