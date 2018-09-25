@@ -80,6 +80,8 @@ while j<=int(i):
 	print("releasers:",ufile)
 	file2.close()
 	if ufile[:1] == '0':
+
+		print('重新获取token...')
 		try:
 			rfile=urllib.request.urlopen('http://47.94.137.238/api/do.php?action=loginIn&name=xiaoxiaolong668&password=z12345')
 		except error.HTTPError as e:
