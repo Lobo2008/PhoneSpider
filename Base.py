@@ -66,6 +66,7 @@ class Base:
             except Exception as e:
                 print('token err:',e,end="")
             finally:  
+                print('   token finally')
                 fr1.close()
             if getTokenOk:
                 print('  token获取成功,stop here')
@@ -114,6 +115,7 @@ class Base:
                 except Exception as e:
                     print('  号码获取出错2(可能是服务器错误):',e)
                 finally:
+                    print('   getphone finally')
                     fr2.close()#先关闭，再处理其他的东西，
                     if not getPhoneOk:
                         print('  重新登录ing...')
@@ -170,6 +172,7 @@ class Base:
             except Exception as e:
                 print('  释放出错2(可能是服务器出错):',e)
             finally:
+                print('   release finally')
                 fr3.close()
             if releaseOk:
                 print(' ok ',end="")
