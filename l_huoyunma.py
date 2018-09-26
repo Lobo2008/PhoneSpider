@@ -92,7 +92,7 @@ while j<=int(i):
 			pass
 		data=rfile.readline()
 		idata=str(data, encoding = "utf-8")
-		token=idata
+		token=idata[2:]
 		rfile.close()
 	j=j+1
 	print("执行获取操作次数:"+str(j-1))
